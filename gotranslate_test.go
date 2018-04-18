@@ -8,7 +8,7 @@ func TestGotranslateNew(t *testing.T) {
 	if err != nil {
 		t.Error("An error while getting a translator has ocurred")
 	}
-	if translator.Translate("こんにちは世界") != "¡Hola Mundo" {
+	if translator.Translate("こんにちは世界") != "Hola mundo" {
 		t.Error("Wrong translation")
 	}
 }

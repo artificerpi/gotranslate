@@ -33,7 +33,7 @@ import (
 //							Const
 //=======================================================================
 
-const baseURL string = "http://translate.google.com"
+const baseURL string = "https://translate.google.cn"
 
 //=======================================================================
 //							Errors
@@ -122,27 +122,21 @@ func translationRequest(text string, from Lang, to Lang) (string, error) {
 	text = strings.Replace(text, "]", "", -1)
 	text = strings.Replace(text, ",", " ", -1)
 
-	URL.Path += "/translate_a/t"
+	URL.Path += "/translate_a/single"
 	parameters := url.Values{}
-	parameters.Add("client", "t")
-	parameters.Add("text", text)
+	parameters.Add("client", "gtx")
 	parameters.Add("hl", "en")
 	parameters.Add("sl", from.String())
 	parameters.Add("tl", to.String())
 	parameters.Add("ie", "UTF-8")
 	parameters.Add("oe", "UTF-8")
-	parameters.Add("multires", "1")
-	parameters.Add("otf", "1")
-	parameters.Add("pc", "1")
-	parameters.Add("trs", "1")
-	parameters.Add("ssel", "3")
-	parameters.Add("tsel", "6")
-	parameters.Add("sc", "1")
+	parameters.Add("dt", "t")
+	parameters.Add("q", text)
 	URL.RawQuery = parameters.Encode()
 
 	resp, err := http.Get(URL.String())
-	defer resp.Body.Close()
 	check(err)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return "", errors.New(http.StatusText(resp.StatusCode))
