@@ -27,49 +27,24 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-)
 
-//=======================================================================
-//							Const
-//=======================================================================
+	"golang.org/x/text/language"
+)
 
 const baseURL string = "https://translate.google.cn"
-
-//=======================================================================
-//							Errors
-//=======================================================================
-
-var (
-	//ErrInvalidLang is launched when an invalid Lang is passed to any func
-	ErrInvalidLang = errors.New("the lang is invalid, please use a valid one")
-	//ErrNoTranslation is launched when there's no translation available
-	ErrNoTranslation = errors.New("theres no translation")
-)
-
-//=======================================================================
-//						Structs & Types
-//=======================================================================
 
 //Translator is a struct that contains an origin Lang and a result Lang
 //and saves history of the queries made
 type Translator struct {
-	fromLang      Lang
-	toLang        Lang
+	fromLang      language.Tag
+	toLang        language.Tag
 	queryGroup    []string
 	responseGroup []string
 }
 
-//=======================================================================
-//							Funcs
-//=======================================================================
-
 //New returns a Translator struct to ease translation operations
 //need a source Lang and a target Lang
-func New(from Lang, to Lang) (*Translator, error) {
-	if !from.valid() || !to.valid() {
-		return nil, ErrInvalidLang
-	}
-
+func New(from, to language.Tag) (*Translator, error) {
 	t := &Translator{
 		fromLang:      from,
 		toLang:        to,
@@ -101,17 +76,13 @@ func (t *Translator) ResultsHistory() []string {
 }
 
 //QuickTranslation translate a single string given from and to langs
-func QuickTranslation(text string, from Lang, to Lang) string {
+func QuickTranslation(text string, from, to language.Tag) string {
 	traslatedText, err := translationRequest(text, from, to)
 	check(err)
 	return traslatedText
 }
 
-func translationRequest(text string, from Lang, to Lang) (string, error) {
-
-	if !from.valid() || !to.valid() {
-		return "", ErrInvalidLang
-	}
+func translationRequest(text string, from, to language.Tag) (string, error) {
 
 	var URL *url.URL
 	URL, err := url.Parse(baseURL)
@@ -151,7 +122,7 @@ func translationRequest(text string, from Lang, to Lang) (string, error) {
 	allStrings = reg.FindAllString(string(contents), 2)
 
 	if len(allStrings) < 1 {
-		return "", ErrNoTranslation
+		return "", errors.New("theres no translation")
 	}
 
 	s := allStrings[0]
