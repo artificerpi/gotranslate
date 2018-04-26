@@ -75,6 +75,13 @@ func (t *Translator) ResultsHistory() []string {
 	return strings
 }
 
+//QuickTranslate translates a single text given to langs with auto detecting from language
+func QuickTranslate(text string, to language.Tag) string {
+	traslatedText, err := translationRequest(text, language.Und, to)
+	check(err)
+	return traslatedText
+}
+
 //QuickTranslation translate a single string given from and to langs
 func QuickTranslation(text string, from, to language.Tag) string {
 	traslatedText, err := translationRequest(text, from, to)
@@ -83,7 +90,6 @@ func QuickTranslation(text string, from, to language.Tag) string {
 }
 
 func translationRequest(text string, from, to language.Tag) (string, error) {
-
 	var URL *url.URL
 	URL, err := url.Parse(baseURL)
 	check(err)
@@ -97,12 +103,17 @@ func translationRequest(text string, from, to language.Tag) (string, error) {
 	parameters := url.Values{}
 	parameters.Add("client", "gtx")
 	parameters.Add("hl", "en")
-	parameters.Add("sl", from.String())
+	parameters.Set("sl", from.String())
 	parameters.Add("tl", to.String())
 	parameters.Add("ie", "UTF-8")
 	parameters.Add("oe", "UTF-8")
 	parameters.Add("dt", "t")
 	parameters.Add("q", text)
+
+	// auto detecting from language
+	if from.IsRoot() {
+		parameters.Set("sl", "auto")
+	}
 	URL.RawQuery = parameters.Encode()
 
 	resp, err := http.Get(URL.String())

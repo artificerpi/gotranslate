@@ -19,6 +19,7 @@ func Test_translationRequest(t *testing.T) {
 		wantErr bool
 	}{
 		{"translate_hello", args{"hello", language.English, language.Chinese}, "你好", false},
+		{"translate_hello_auto", args{"hello", language.Und, language.Chinese}, "你好", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

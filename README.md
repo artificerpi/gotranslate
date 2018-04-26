@@ -10,7 +10,11 @@ import (
 ```
 * Example
 ``` go
-gotranslate.QuickTranslation("Hello"), language.English, language.Chinese)
+// auto detecting from language type
+gotranslate.QuickTranslate("Hello", language.Chinese)
+// output: 你好
+
+gotranslate.QuickTranslation("Hello", language.English, language.Chinese)
 // output: 你好
 ```
 
